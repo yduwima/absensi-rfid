@@ -128,4 +128,48 @@ class Absensi_harian_model extends CI_Model {
         
         return $this->db->count_all_results();
     }
+
+    public function get_laporan_siswa($bulan, $tahun, $kelas_id = null) {
+        $this->db->select('absensi_harian.*, siswa.nama as nama_siswa, siswa.nis, kelas.nama_kelas');
+        $this->db->from($this->table);
+        $this->db->join('siswa', 'siswa.id = absensi_harian.user_id', 'inner');
+        $this->db->join('kelas', 'kelas.id = siswa.kelas_id', 'left');
+        $this->db->where('absensi_harian.user_type', 'siswa');
+        $this->db->where('MONTH(absensi_harian.tanggal)', $bulan);
+        $this->db->where('YEAR(absensi_harian.tanggal)', $tahun);
+        
+        if ($kelas_id) {
+            $this->db->where('siswa.kelas_id', $kelas_id);
+        }
+        
+        $this->db->order_by('absensi_harian.tanggal', 'DESC');
+        $this->db->order_by('siswa.nama', 'ASC');
+        
+        return $this->db->get()->result();
+    }
+
+    public function get_laporan_guru($bulan, $tahun) {
+        $this->db->select('absensi_harian.*, guru.nama as nama_guru, guru.nip');
+        $this->db->from($this->table);
+        $this->db->join('guru', 'guru.id = absensi_harian.user_id', 'inner');
+        $this->db->where('absensi_harian.user_type', 'guru');
+        $this->db->where('MONTH(absensi_harian.tanggal)', $bulan);
+        $this->db->where('YEAR(absensi_harian.tanggal)', $tahun);
+        $this->db->order_by('absensi_harian.tanggal', 'DESC');
+        $this->db->order_by('guru.nama', 'ASC');
+        
+        return $this->db->get()->result();
+    }
+
+    public function get_rekap_siswa($siswa_id, $bulan, $tahun) {
+        $this->db->select('COUNT(*) as total_hadir, SUM(keterlambatan_menit) as total_terlambat');
+        $this->db->from($this->table);
+        $this->db->where('user_type', 'siswa');
+        $this->db->where('user_id', $siswa_id);
+        $this->db->where('MONTH(tanggal)', $bulan);
+        $this->db->where('YEAR(tanggal)', $tahun);
+        $this->db->where('jam_masuk IS NOT NULL');
+        
+        return $this->db->get()->row();
+    }
 }
