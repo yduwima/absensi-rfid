@@ -1,0 +1,32 @@
+# CodeIgniter
+/application/cache/*
+!/application/cache/index.html
+/application/logs/*
+!/application/logs/index.html
+
+# User uploaded files
+/assets/uploads/*
+!/assets/uploads/.gitkeep
+
+# System folders
+/system/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Composer
+/vendor/
+
+# Environment
+.env
+
+# Session files
+/application/sessions/*
+!/application/sessions/index.html
